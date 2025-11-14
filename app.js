@@ -85,9 +85,9 @@ var NumberMatcherApp = {
         this.elements.filterContainer = document.querySelector('.filter-period-buttons');
         this.elements.filterButtons = {
             all: document.getElementById('filter-all'),
+            50: document.getElementById('filter-50'),
             100: document.getElementById('filter-100'),
-            200: document.getElementById('filter-200'),
-            300: document.getElementById('filter-300')
+            200: document.getElementById('filter-200')
         };
     },
     
@@ -119,6 +119,10 @@ var NumberMatcherApp = {
         try {
             // 使用硬编码的默认数据作为备用
             var defaultData = { "numberGroups": [
+        {
+            "id": "2025304",
+            "numbers": [1, 6, 17, 19, 21, 30, 31, 32, 33, 35, 42, 49, 50, 52, 59, 65, 66, 68, 75, 78]
+        },
         {
             "id": "2025303",
             "numbers": [1, 2, 10, 11, 15, 25, 33, 43, 44, 50, 52, 54, 55, 56, 57, 60, 62, 69, 74, 78]
@@ -1401,15 +1405,19 @@ var NumberMatcherApp = {
         if (this.elements.filterButtons.all) {
             this.elements.filterButtons.all.addEventListener('click', this.handleFilterButtonClick.bind(this, 0));
         }
+        if (this.elements.filterButtons[50]) {
+            this.elements.filterButtons[50].addEventListener('click', this.handleFilterButtonClick.bind(this, 50));
+        }
         if (this.elements.filterButtons[100]) {
             this.elements.filterButtons[100].addEventListener('click', this.handleFilterButtonClick.bind(this, 100));
         }
         if (this.elements.filterButtons[200]) {
             this.elements.filterButtons[200].addEventListener('click', this.handleFilterButtonClick.bind(this, 200));
         }
-        if (this.elements.filterButtons[300]) {
-            this.elements.filterButtons[300].addEventListener('click', this.handleFilterButtonClick.bind(this, 300));
-        }
+        // 移除300期的筛选按钮事件监听
+        // if (this.elements.filterButtons[300]) {
+        //     this.elements.filterButtons[300].addEventListener('click', this.handleFilterButtonClick.bind(this, 300));
+        // }
         
         // 单个导入按钮
         this.elements.importSingle.addEventListener('click', this.handleSingleImport.bind(this));
@@ -1695,14 +1703,14 @@ var NumberMatcherApp = {
             }
         });
         
-        // 按出现次数降序排序，如果出现次数相同，则按遗漏期数降序排序
+        // 按出现次数降序排序，如果出现次数相同，则按遗漏期数升序排序
         console.log('排序前的前5个结果:', results.slice(0, 5).map(r => ({occurrences: r.occurrences, absencePeriods: r.absencePeriods, probability: r.probability})));
         results.sort(function(a, b) {
             if (b.occurrences !== a.occurrences) {
                 return b.occurrences - a.occurrences;
             } else {
-                // 按遗漏期数降序排序
-                return b.absencePeriods - a.absencePeriods;
+                // 按遗漏期数升序排序（遗漏次数越少的越前面）
+                return a.absencePeriods - b.absencePeriods;
             }
         });
         console.log('排序后的前5个结果:', results.slice(0, 5).map(r => ({occurrences: r.occurrences, absencePeriods: r.absencePeriods, probability: r.probability})));
